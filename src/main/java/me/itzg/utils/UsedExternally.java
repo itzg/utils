@@ -8,6 +8,6 @@ import java.lang.annotation.Target;
  * excluded from "unused symbol" code inspections.
  *
  */
-@Target(ElementType.METHOD)
+@Target({ElementType.METHOD, ElementType.CONSTRUCTOR, ElementType.TYPE})
 public @interface UsedExternally {
 }

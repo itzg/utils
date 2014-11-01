@@ -50,6 +50,25 @@ public class ChannelLineScannerTest {
     }
 
     @Test
+    public void testDiscontinuePartWay() throws Exception {
+        ChannelLineScanner lineScanner = new ChannelLineScanner();
+        lineScanner.setMaxLineSize(100);
+        lineScanner.setBufferSize(5000);
+
+        Path contentPath = loadResourcePath("ChannelLineScannerTest/test-with-eof-nl.txt");
+        try (FileChannel fileChannel = FileChannel.open(contentPath, StandardOpenOption.READ)) {
+            ChannelLineScanner.Observer observer = mock(ChannelLineScanner.Observer.class);
+            when(observer.observeLine(anyObject(), anyLong()))
+                    .thenReturn(false);
+
+            lineScanner.scan(fileChannel, observer);
+
+            verify(observer).observeLine(matchingCharSequence("AAA"), Matchers.eq(0l));
+            verifyNoMoreInteractions(observer);
+        }
+    }
+
+    @Test
     public void testScanInBits() throws Exception {
         ChannelLineScanner lineScanner = new ChannelLineScanner();
         lineScanner.setMaxLineSize(100);
@@ -81,6 +100,7 @@ public class ChannelLineScannerTest {
     private void verifyTypical(ChannelLineScanner lineScanner, Path contentPath) throws IOException {
         try (FileChannel fileChannel = FileChannel.open(contentPath, StandardOpenOption.READ)) {
             ChannelLineScanner.Observer observer = mock(ChannelLineScanner.Observer.class);
+            when(observer.observeLine(anyObject(), anyLong())).thenReturn(true);
 
             lineScanner.scan(fileChannel, observer);
 
@@ -88,7 +108,7 @@ public class ChannelLineScannerTest {
             verify(observer).observeLine(matchingCharSequence("BBBB"), Matchers.eq(4l));
             verify(observer).observeLine(matchingCharSequence("CCCCC"), Matchers.eq(9l));
             verify(observer).observeLine(matchingCharSequence("DDDDDD"), Matchers.eq(15l));
-
+            verify(observer).observeEndOfFile(anyLong());
             verifyNoMoreInteractions(observer);
         }
     }
@@ -103,10 +123,12 @@ public class ChannelLineScannerTest {
 
         try (FileChannel fileChannel = FileChannel.open(contentPath, StandardOpenOption.READ)) {
             ChannelLineScanner.Observer observer = mock(ChannelLineScanner.Observer.class);
+            when(observer.observeLine(anyObject(), anyLong())).thenReturn(true);
 
             lineScanner.scan(fileChannel, observer);
 
             verify(observer).observeLine(matchingCharSequence("DDDDDD"), Matchers.eq(0l));
+            verify(observer).observeEndOfFile(6);
 
             verifyNoMoreInteractions(observer);
         }
@@ -125,6 +147,7 @@ public class ChannelLineScannerTest {
             ChannelLineScanner.Observer observer = mock(ChannelLineScanner.Observer.class);
 
             lineScanner.scan(fileChannel, observer);
+            verify(observer).observeEndOfFile(0);
 
             verifyNoMoreInteractions(observer);
         }
@@ -142,6 +165,7 @@ public class ChannelLineScannerTest {
         Path contentPath = loadResourcePath("ChannelLineScannerTest/test-crnl.txt");
         try (FileChannel fileChannel = FileChannel.open(contentPath, StandardOpenOption.READ)) {
             ChannelLineScanner.Observer observer = mock(ChannelLineScanner.Observer.class);
+            when(observer.observeLine(anyObject(), anyLong())).thenReturn(true);
 
             lineScanner.scan(fileChannel, observer);
 
@@ -149,7 +173,7 @@ public class ChannelLineScannerTest {
             verify(observer).observeLine(matchingCharSequence("BBBB"), Matchers.eq(5l));
             verify(observer).observeLine(matchingCharSequence("CCCCC"), Matchers.eq(11l));
             verify(observer).observeLine(matchingCharSequence("DDDDDD"), Matchers.eq(18l));
-
+            verify(observer).observeEndOfFile(26);
             verifyNoMoreInteractions(observer);
         }
     }

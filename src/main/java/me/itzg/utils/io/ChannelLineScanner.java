@@ -65,7 +65,8 @@ public class ChannelLineScanner {
 
         while ((amountRead = channel.read(buffers.getFirst())) != -1) {
             if (amountRead > 0) {
-                long bufferPositionInFile = totalAmountRead;
+                long bufferPositionInFile = totalAmountRead -
+                        (remainder != null ? remainder.remaining() : 0);
                 totalAmountRead += amountRead;
                 int previousNewLinePos = 0;
 
@@ -80,20 +81,26 @@ public class ChannelLineScanner {
                         CharBuffer line = charBuffer.duplicate();
 
                         line.position(previousNewLinePos)
-                            .limit(newLinePos);
+                                .limit(newLinePos);
 
-                        observer.observeLine(line, bufferPositionInFile+previousNewLinePos);
+                        if (!observer.observeLine(line, bufferPositionInFile + previousNewLinePos)) {
+                            return;
+                        }
 
                         // grab position AFTER the delimiter
                         previousNewLinePos = charBuffer.position();
                     }
                 }
 
+                if (previousNewLinePos == 0 && (activeBuffer.limit() == activeBuffer.capacity())) {
+                    throw new IOException("Line length exceeded read buffer at "+totalAmountRead);
+                }
+
                 remainder = activeBuffer.duplicate();
                 remainder.position(previousNewLinePos);
 
                 // copy over the remainder to the carry-over buffer
-                buffers.getLast().put(activeBuffer);
+                buffers.getLast().put(remainder.duplicate());
                 // prep active to become carry-over
                 activeBuffer.clear();
                 // swap carry-over for active
@@ -109,6 +116,7 @@ public class ChannelLineScanner {
             observer.observeLine(charBuffer,
                     totalAmountRead - sizeOfRemainder);
         }
+        observer.observeEndOfFile(totalAmountRead);
     }
 
     /**
@@ -138,6 +146,17 @@ public class ChannelLineScanner {
 
     public interface Observer {
 
-        void observeLine(CharSequence line, long position);
+        /**
+         * This method gets invoked after each line has been scanned.
+         * <p>NOTE: if the implementation returns <code>false</code>, then
+         * {@link #observeEndOfFile(long)} will not be invoked.</p>
+         *
+         * @param line the line itself
+         * @param position the byte-position in the file of the start of this line
+         * @return true to continue scanning or false to stop after this line
+         */
+        boolean observeLine(CharSequence line, long position);
+
+        void observeEndOfFile(long position);
     }
 }
