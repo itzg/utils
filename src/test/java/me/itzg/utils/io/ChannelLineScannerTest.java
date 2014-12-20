@@ -1,7 +1,7 @@
 package me.itzg.utils.io;
 
+import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentMatcher;
 import org.mockito.Matchers;
 
 import java.io.FileNotFoundException;
@@ -17,11 +17,16 @@ import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.*;
 
 public class ChannelLineScannerTest {
+    private ChannelLineScanner lineScanner;
+
+    @Before
+    public void setUp() throws Exception {
+        lineScanner = new ChannelLineScanner();
+        lineScanner.initDefaultBufferPool();
+    }
 
     @Test
     public void testScanInOne_NoEofNl() throws Exception {
-        ChannelLineScanner lineScanner = new ChannelLineScanner();
-        lineScanner.setMaxLineSize(100);
         lineScanner.setBufferSize(5000);
 
         Path contentPath = loadResourcePath("ChannelLineScannerTest/test-no-eof-nl.txt");
@@ -41,8 +46,6 @@ public class ChannelLineScannerTest {
 
     @Test
     public void testScanInOne_WithEofNl() throws Exception {
-        ChannelLineScanner lineScanner = new ChannelLineScanner();
-        lineScanner.setMaxLineSize(100);
         lineScanner.setBufferSize(5000);
 
         Path contentPath = loadResourcePath("ChannelLineScannerTest/test-with-eof-nl.txt");
@@ -51,8 +54,6 @@ public class ChannelLineScannerTest {
 
     @Test
     public void testDiscontinuePartWay() throws Exception {
-        ChannelLineScanner lineScanner = new ChannelLineScanner();
-        lineScanner.setMaxLineSize(100);
         lineScanner.setBufferSize(5000);
 
         Path contentPath = loadResourcePath("ChannelLineScannerTest/test-with-eof-nl.txt");
@@ -70,27 +71,10 @@ public class ChannelLineScannerTest {
 
     @Test
     public void testScanInBits() throws Exception {
-        ChannelLineScanner lineScanner = new ChannelLineScanner();
-        lineScanner.setMaxLineSize(100);
         lineScanner.setBufferSize(15); // buffer lands in middle of file content
 
         Path contentPath = loadResourcePath("ChannelLineScannerTest/test-with-eof-nl.txt");
         verifyTypical(lineScanner, contentPath);
-    }
-
-    static class CharSequenceMatchesString extends ArgumentMatcher<CharSequence> {
-        private String goal;
-
-        CharSequenceMatchesString(String goal) {
-            this.goal = goal;
-        }
-
-        @Override
-        public boolean matches(Object argument) {
-            return argument != null &&
-                    argument instanceof CharSequence
-                    && argument.toString().equals(goal);
-        }
     }
 
     private CharSequence matchingCharSequence(String expected) {
@@ -115,8 +99,6 @@ public class ChannelLineScannerTest {
 
     @Test
     public void testOneLine() throws Exception {
-        ChannelLineScanner lineScanner = new ChannelLineScanner();
-        lineScanner.setMaxLineSize(100);
         lineScanner.setBufferSize(5000);
 
         Path contentPath = loadResourcePath("ChannelLineScannerTest/test-oneline-no-eof-nl.txt");
@@ -137,8 +119,6 @@ public class ChannelLineScannerTest {
 
     @Test
     public void testEmptyFile() throws Exception {
-        ChannelLineScanner lineScanner = new ChannelLineScanner();
-        lineScanner.setMaxLineSize(100);
         lineScanner.setBufferSize(5000);
 
         Path contentPath = loadResourcePath("ChannelLineScannerTest/test-empty-file.txt");
@@ -157,8 +137,6 @@ public class ChannelLineScannerTest {
 
     @Test
     public void testMultiCharDelimiter() throws Exception {
-        ChannelLineScanner lineScanner = new ChannelLineScanner();
-        lineScanner.setMaxLineSize(100);
         lineScanner.setBufferSize(5000);
         lineScanner.setDelimiter("\r\n"); // Windows style
 
