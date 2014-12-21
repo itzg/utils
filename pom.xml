@@ -61,4 +61,8 @@
         </repository>
     </distributionManagement>
 
+    <scm>
+        <developerConnection>scm:git:https://github.com/itzg/utils.git</developerConnection>
+    </scm>
+
 </project>
