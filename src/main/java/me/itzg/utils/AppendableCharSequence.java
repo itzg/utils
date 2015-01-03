@@ -23,6 +23,13 @@ public class AppendableCharSequence implements CharSequence {
     private Map.Entry<Integer, CharSequence> cachedEntry;
     private int endOfCachedEntry;
 
+    public AppendableCharSequence() {
+    }
+
+    public AppendableCharSequence(CharSequence initialContent) {
+        append(initialContent);
+    }
+
     /**
      * Appends the given {@link java.lang.CharSequence} onto the content of this instance.
      * @param charSequence the content to append
