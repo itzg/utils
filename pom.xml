@@ -4,7 +4,7 @@
 
     <groupId>me.itzg</groupId>
     <artifactId>utils</artifactId>
-    <version>1.2-SNAPSHOT</version>
+    <version>1.2</version>
 
     <description>Various utility classes with minimal dependencies</description>
 
@@ -68,7 +68,7 @@
     <scm>
         <connection>scm:git:https://github.com/itzg/utils.git</connection>
         <developerConnection>scm:git:https://github.com/itzg/utils.git</developerConnection>
-        <tag>HEAD</tag>
+        <tag>utils-1.2</tag>
     </scm>
 
 </project>
