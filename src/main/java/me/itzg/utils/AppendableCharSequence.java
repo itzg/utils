@@ -1,5 +1,6 @@
 package me.itzg.utils;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.NavigableMap;
 import java.util.TreeMap;
@@ -13,7 +14,7 @@ import java.util.TreeMap;
  * @author Geoff Bourne
  * @since 12/6/2014
  */
-public class AppendableCharSequence implements CharSequence {
+public class AppendableCharSequence implements CharSequence, Appendable {
     private TreeMap<Integer, CharSequence> sequences = new TreeMap<>();
 
     // total running length
@@ -41,6 +42,16 @@ public class AppendableCharSequence implements CharSequence {
         length += charSequence.length();
 
         return this;
+    }
+
+    @Override
+    public Appendable append(CharSequence csq, int start, int end) throws IOException {
+        return append(csq.subSequence(start, end));
+    }
+
+    @Override
+    public Appendable append(char c) throws IOException {
+        return append(String.valueOf(c));
     }
 
     @Override
