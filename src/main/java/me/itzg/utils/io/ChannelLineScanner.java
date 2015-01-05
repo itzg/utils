@@ -21,7 +21,7 @@ import java.util.LinkedList;
  * observer the exact file offset of the line's starting position.
  *
  * @author Geoff Bourne
- * @since  10/19/2014
+ * @since  1.0
  */
 public class ChannelLineScanner {
 
@@ -93,7 +93,7 @@ public class ChannelLineScanner {
                     ByteBuffer activeBuffer = buffers.getFirst().getBuffer();
                     activeBuffer.flip();
                     CharBuffer charBuffer = null;
-                    charBuffer = charset.newDecoder().decode(activeBuffer);
+                    charBuffer = getCharset().newDecoder().decode(activeBuffer);
 
                     while (charBuffer.hasRemaining()) {
                         int newLinePos = scanForNewLine(charBuffer);
@@ -133,7 +133,7 @@ public class ChannelLineScanner {
             // and check for a remaining line if file didn't end with line delimiter
             if (remainder != null && remainder.hasRemaining()) {
                 int sizeOfRemainder = remainder.remaining();
-                CharBuffer charBuffer = charset.newDecoder().decode(remainder);
+                CharBuffer charBuffer = getCharset().newDecoder().decode(remainder);
                 observer.observeLine(charBuffer,
                         totalAmountRead - sizeOfRemainder);
             }
@@ -194,6 +194,14 @@ public class ChannelLineScanner {
             }
         }
         return -1;
+    }
+
+    public Charset getCharset() {
+        return charset;
+    }
+
+    public void setCharset(Charset charset) {
+        this.charset = charset;
     }
 
     public interface Observer {
