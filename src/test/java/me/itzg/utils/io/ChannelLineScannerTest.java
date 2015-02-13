@@ -138,7 +138,7 @@ public class ChannelLineScannerTest {
     @Test
     public void testMultiCharDelimiter() throws Exception {
         lineScanner.setBufferSize(5000);
-        lineScanner.setDelimiter("\r\n"); // Windows style
+        lineScanner.setDelimiter("+="); // Windows style
 
         Path contentPath = loadResourcePath("ChannelLineScannerTest/test-crnl.txt");
         try (FileChannel fileChannel = FileChannel.open(contentPath, StandardOpenOption.READ)) {
@@ -151,7 +151,7 @@ public class ChannelLineScannerTest {
             verify(observer).observeLine(matchingCharSequence("BBBB"), Matchers.eq(5l));
             verify(observer).observeLine(matchingCharSequence("CCCCC"), Matchers.eq(11l));
             verify(observer).observeLine(matchingCharSequence("DDDDDD"), Matchers.eq(18l));
-            verify(observer).observeEndOfFile(26);
+            verify(observer).observeEndOfFile(24);
             verifyNoMoreInteractions(observer);
         }
     }
