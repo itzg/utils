@@ -79,7 +79,9 @@ public class AppendableCharSequence implements CharSequence, Appendable {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sequences.forEach((pos,seq) -> sb.append(seq));
+        for (CharSequence seq : sequences.values()) {
+            sb.append(seq);
+        }
         return sb.toString();
     }
 

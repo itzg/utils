@@ -59,7 +59,7 @@ public class ChannelLineScannerTest {
         Path contentPath = loadResourcePath("ChannelLineScannerTest/test-with-eof-nl.txt");
         try (FileChannel fileChannel = FileChannel.open(contentPath, StandardOpenOption.READ)) {
             ChannelLineScanner.Observer observer = mock(ChannelLineScanner.Observer.class);
-            when(observer.observeLine(anyObject(), anyLong()))
+            when(observer.observeLine(any(CharSequence.class), anyLong()))
                     .thenReturn(false);
 
             lineScanner.scan(fileChannel, observer);
@@ -84,7 +84,7 @@ public class ChannelLineScannerTest {
     private void verifyTypical(ChannelLineScanner lineScanner, Path contentPath) throws IOException {
         try (FileChannel fileChannel = FileChannel.open(contentPath, StandardOpenOption.READ)) {
             ChannelLineScanner.Observer observer = mock(ChannelLineScanner.Observer.class);
-            when(observer.observeLine(anyObject(), anyLong())).thenReturn(true);
+            when(observer.observeLine(any(CharSequence.class), anyLong())).thenReturn(true);
 
             lineScanner.scan(fileChannel, observer);
 
@@ -105,7 +105,7 @@ public class ChannelLineScannerTest {
 
         try (FileChannel fileChannel = FileChannel.open(contentPath, StandardOpenOption.READ)) {
             ChannelLineScanner.Observer observer = mock(ChannelLineScanner.Observer.class);
-            when(observer.observeLine(anyObject(), anyLong())).thenReturn(true);
+            when(observer.observeLine(any(CharSequence.class), anyLong())).thenReturn(true);
 
             lineScanner.scan(fileChannel, observer);
 
@@ -143,7 +143,7 @@ public class ChannelLineScannerTest {
         Path contentPath = loadResourcePath("ChannelLineScannerTest/test-crnl.txt");
         try (FileChannel fileChannel = FileChannel.open(contentPath, StandardOpenOption.READ)) {
             ChannelLineScanner.Observer observer = mock(ChannelLineScanner.Observer.class);
-            when(observer.observeLine(anyObject(), anyLong())).thenReturn(true);
+            when(observer.observeLine(any(CharSequence.class), anyLong())).thenReturn(true);
 
             lineScanner.scan(fileChannel, observer);
 

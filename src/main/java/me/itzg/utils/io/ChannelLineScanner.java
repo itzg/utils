@@ -152,7 +152,9 @@ public class ChannelLineScanner {
     }
 
     private void releaseBuffers(LinkedList<ByteBufferInstance> buffers) {
-        buffers.forEach(b -> deallocateBuffer(b));
+        for (ByteBufferInstance b : buffers) {
+            deallocateBuffer(b);
+        }
     }
 
     private void deallocateBuffer(ByteBufferInstance b) {
